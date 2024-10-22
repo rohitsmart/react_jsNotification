@@ -1,0 +1,97 @@
+/* LoginForm.css */
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+    padding: 20px;
+  }
+  
+  .login-card {
+    background-color: #ffffff;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .login-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .login-subtitle {
+    font-size: 14px;
+    color: #888888;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333333;
+  }
+  
+  .login-input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+  }
+  
+  .login-input:focus {
+    border-color: #5cb85c;
+  }
+  
+  .login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #5cb85c;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .login-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .error-message {
+    color: red;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .login-card {
+      padding: 20px;
+    }
+  
+    .login-title {
+      font-size: 20px;
+    }
+  
+    .login-button {
+      font-size: 14px;
+    }
+  }
+
+  
+  
