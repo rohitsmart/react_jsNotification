@@ -23,15 +23,33 @@ export const NotificationProvider = ({ children }) => {
   useEffect(() => {
     const username = localStorage.getItem("username");
     console.log("Username for notifications:", username); // Debug log
+
     if (username) {
-      eventSourceRef.current = new EventSource(`${notify}?username=${username}`);
-      eventSourceRef.current.onmessage = (event) => {
-        console.log("Notification received:", event.data); // Debug log
-        addNotification(event.data);
+      const connectToEventSource = () => {
+        eventSourceRef.current = new EventSource(`${notify}?username=${username}`);
+
+        eventSourceRef.current.onmessage = (event) => {
+          console.log("Notification received:", event.data); // Debug log
+          addNotification(event.data);
+        };
+
+        eventSourceRef.current.onerror = (err) => {
+          console.error("EventSource error:", err);
+          eventSourceRef.current.close();
+          // Optionally retry after a delay
+          setTimeout(() => {
+            console.log("Reconnecting to notifications...");
+            connectToEventSource(); // Try to reconnect
+          }, 5000);
+        };
       };
 
+      connectToEventSource();
+
       return () => {
-        eventSourceRef.current.close();
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+        }
       };
     }
   }, []);
