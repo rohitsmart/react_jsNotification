@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import './DashboardLayout.css';
-
-// Importing icons from react-icons
 import { FaHome, FaFutbol, FaListUl, FaUsers, FaLock, FaSignOutAlt, FaComments } from 'react-icons/fa';
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
 import avtar from '../../assests/icons/profile.png';
@@ -24,8 +22,6 @@ const DashboardLayout = () => {
     localStorage.removeItem("username");
     navigate("/login");
   };
-
-  // Function to dynamically render components
   const renderActiveComponent = () => {
     switch (activeComponent) {
       case 'home':
@@ -72,7 +68,6 @@ const DashboardLayout = () => {
             <li><button onClick={handleLogout}><FaSignOutAlt /> {isSidebarOpen && <span>Logout</span>}</button></li>
           </ul>
         </aside>
-
         <main className="main-content">
           {renderActiveComponent()}
         </main>
