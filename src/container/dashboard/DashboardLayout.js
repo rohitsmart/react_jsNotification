@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import './DashboardLayout.css';
 import { FaHome, FaFutbol, FaListUl, FaUsers, FaLock, FaSignOutAlt, FaComments } from 'react-icons/fa';
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
-import avtar from '../../assests/icons/profile.png';
 
 import Home from './Home';
 import Courts from './Courts';
@@ -11,6 +10,7 @@ import UserList from './UserList';
 import Chat from './Chat';
 import ChangePassword from './ChangePassword';
 import { useNavigate } from "react-router-dom";
+import Header from "./Header";
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -22,6 +22,8 @@ const DashboardLayout = () => {
     localStorage.removeItem("username");
     navigate("/login");
   };
+
+  // Function to dynamically render components
   const renderActiveComponent = () => {
     switch (activeComponent) {
       case 'home':
@@ -43,12 +45,7 @@ const DashboardLayout = () => {
 
   return (
     <div className="dashboard-layout">
-      <header className="header">
-        <div className="profile-section">
-          <img src={avtar} alt="Profile" className="profile-avatar" />
-          <span className="username">{localStorage.getItem("username")}</span>
-        </div>
-      </header>
+      <Header /> {/* Using the Header component */}
 
       <div className="layout-body">
         <aside className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
@@ -68,6 +65,7 @@ const DashboardLayout = () => {
             <li><button onClick={handleLogout}><FaSignOutAlt /> {isSidebarOpen && <span>Logout</span>}</button></li>
           </ul>
         </aside>
+
         <main className="main-content">
           {renderActiveComponent()}
         </main>
