@@ -13,7 +13,7 @@ export const NotificationProvider = ({ children }) => {
   const eventSourceRef = useRef(null);
 
   const addNotification = (message) => {
-    console.log("Adding notification:", message); // Debug log
+    console.log("Adding notification:", message);
     setNotifications((prev) => [...prev, message]);
     setTimeout(() => {
       setNotifications((prev) => prev.filter((_, i) => i !== 0));

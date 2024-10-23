@@ -3,12 +3,14 @@ import axios from "axios";
 import { LOGIN_ENDPOINT } from "../api/endpoint";
 import './LoginForm.css';
 import { useNotification } from "./NotificationContext";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const addNotification = useNotification();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,6 +27,8 @@ const LoginForm = () => {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("username", formData.email);
       addNotification("Login successful!");
+      navigate("/dashboard/home");
+
       console.log("Login response:", response.data); // Debug log
     } catch (err) {
       setError("Invalid login credentials. Please try again.");
