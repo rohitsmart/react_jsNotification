@@ -14,7 +14,8 @@ const Header = () => {
     setShowNotifications((prev) => !prev); // Toggle notification box
   };
 
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.stopPropagation(); // Prevent the click event from propagating to the bell click handler
     setShowNotifications(false); // Close the notification box
   };
 
