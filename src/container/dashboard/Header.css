@@ -32,7 +32,76 @@
     transition: color 0.3s ease;
   }
   
+  .notification-icon.glow {.header {
+    background-color: #34495e;
+    padding: 20px;
+    color: #ecf0f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed; /* Ensure the header stays fixed */
+    top: 0; /* Position at the top */
+    width: 100%; /* Full width */
+    z-index: 1000; /* On top of other elements */
+  }
+  
+  .profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .username {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ecf0f1;
+  }
+  
+  .notification-section {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  /* Notification icon styling */
+  .notification-icon {
+    position: relative;
+    font-size: 1.5rem;
+    color: #ecf0f1;
+    transition: color 0.3s ease;
+  }
+  
   .notification-icon.glow {
+    color: #28a745;
+    animation: glow 1s infinite alternate;
+  }
+  
+  @keyframes glow {
+    from {
+      color: #28a745;
+    }
+    to {
+      color: #218838;
+    }
+  }
+  
+  /* Notification box styling */
+  .notification-box {
+    position: absolute;
+    top: 60px; /* Adjust as needed */
+    right: 0;
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 320px;
+    border-radius: 8px;
+    z-index: 1000; /* On top of other elements */
+    padding: 10px;
+  }
+  
+  /* Additional notification styles remain unchanged */
+  
     color: #28a745;
     animation: glow 1s infinite alternate;
   }

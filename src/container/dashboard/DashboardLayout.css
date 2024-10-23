@@ -13,12 +13,17 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  position: fixed; /* Fixed header */
+  top: 0; /* Aligns the header to the top */
+  width: 100%; /* Full width */
+  z-index: 1000; /* Ensure it appears above other content */
 }
 
 /* Body layout, with sidebar below the header */
 .layout-body {
   display: flex;
-  flex: 1;
+  flex: 1; /* Fill available space */
+  margin-top: 80px; /* Adjust based on header height */
 }
 
 /* Sidebar styling */
@@ -27,9 +32,11 @@
   color: #ecf0f1;
   transition: width 0.3s ease;
   height: calc(100vh - 80px); /* Adjust height to exclude header */
-  position: sticky;
-  top: 0;
-  overflow: hidden;
+  position: fixed; /* Fixed sidebar */
+  top: 80px; /* Adjust based on header height */
+  left: 0; /* Align to left */
+  overflow-y: auto; /* Allow scrolling within the sidebar */
+  z-index: 100; /* Ensure it's on top of other elements */
 }
 
 .sidebar.open {
@@ -53,6 +60,7 @@
   margin: 0;
 }
 
+/* Sidebar navigation */
 .sidebar-nav {
   list-style-type: none;
   padding: 0;
@@ -64,7 +72,8 @@
   align-items: center;
 }
 
-.sidebar-nav li a, .sidebar-nav li button {
+.sidebar-nav li a,
+.sidebar-nav li button {
   color: #ecf0f1;
   text-decoration: none;
   display: flex;
@@ -76,7 +85,8 @@
   cursor: pointer;
 }
 
-.sidebar-nav li a:hover, .sidebar-nav li button:hover {
+.sidebar-nav li a:hover,
+.sidebar-nav li button:hover {
   background-color: #34495e;
 }
 
@@ -101,25 +111,12 @@
   align-items: center;
 }
 
-.toggle-btn svg {
-  font-size: 24px; /* Adjust toggle icon size */
-}
-
-/* Profile section inside the header */
-.profile-section {
-  display: flex;
-  align-items: center;
-}
-
-.profile-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
+/* Main content styling */
 .main-content {
   padding: 20px;
   flex: 1;
+  margin-left: 250px; /* Start after the sidebar */
   background-color: #ecf0f1;
+  height: calc(100vh - 80px); /* Full height minus header */
+  overflow-y: auto; /* Allow scrolling within main content */
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaBell, FaTimes } from 'react-icons/fa';
-import avtar from '../../assests/icons/profile.png';
+import avatar from '../../assests/icons/profile.png'; // Make sure the path is correct
 import './Header.css';
 import { useNotification } from '../NotificationContext';
 
@@ -39,7 +39,7 @@ const Header = () => {
   return (
     <header className="header">
       <div className="profile-section">
-        <img src={avtar} alt="Profile" className="profile-avatar" />
+        <img src={avatar} alt="Profile" className="profile-avatar" />
         <span className="username">{localStorage.getItem("username")}</span>
       </div>
 
