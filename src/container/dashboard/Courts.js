@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'; // Import required components
 import './Courts.css';
+
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Courts = () => {
   const [courts, setCourts] = useState([]);
@@ -9,11 +13,10 @@ const Courts = () => {
   const [courtStats, setCourtStats] = useState({
     busy: 0,
     free: 0,
-    average: 0
+    average: 0,
   });
 
   useEffect(() => {
-    // Fetch courts from API (for now, we're using dummy data)
     const fetchedCourts = [
       {
         name: 'Central Park Tennis Courts',
@@ -43,20 +46,20 @@ const Courts = () => {
 
   useEffect(() => {
     // Calculate statistics for busy, free, and average courts
-    const busyCount = courts.filter(court => court.status === 'busy').length;
-    const freeCount = courts.filter(court => court.status === 'free').length;
-    const avgCount = courts.filter(court => court.status === 'average').length;
+    const busyCount = courts.filter((court) => court.status === 'busy').length;
+    const freeCount = courts.filter((court) => court.status === 'free').length;
+    const avgCount = courts.filter((court) => court.status === 'average').length;
 
     setCourtStats({
       busy: busyCount,
       free: freeCount,
-      average: avgCount
+      average: avgCount,
     });
   }, [courts]);
 
   const handleFilter = () => {
     setFilteredCourts(
-      courts.filter(court =>
+      courts.filter((court) =>
         court.location.toLowerCase().includes(locationFilter.toLowerCase())
       )
     );
@@ -77,7 +80,7 @@ const Courts = () => {
     <div className="courts-container">
       <h2 className="title">Tennis Courts Dashboard</h2>
       <p>Welcome to the Tennis Mate Dashboard, track court status, add new courts, and search based on location.</p>
-      
+
       <div className="search-section">
         <input
           type="text"
