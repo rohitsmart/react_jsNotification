@@ -53,3 +53,48 @@
     }
   }
   
+  /* Notification box styling */
+  .notification-box {
+    position: absolute;
+    top: 60px; /* Adjust to position below the header */
+    right: 0;
+    background-color: #fff; /* White background for the notification box */
+    color: #333; /* Dark text color */
+    border: 1px solid #ccc; /* Light border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    width: 300px; /* Width of the notification box */
+    border-radius: 5px; /* Rounded corners */
+    z-index: 1000; /* Ensure it appears above other elements */
+    padding: 10px; /* Padding inside the box */
+  }
+  
+  /* Notification header */
+  .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Close icon */
+  .close-icon {
+    cursor: pointer;
+    color: #888; /* Grey color for the close icon */
+  }
+  
+  /* No notifications message */
+  .no-notifications {
+    padding: 10px;
+    text-align: center;
+    color: #777; /* Lighter color for no notifications */
+  }
+  
+  /* Notification item */
+  .notification-item {
+    padding: 8px;
+    border-bottom: 1px solid #eee; /* Divider between notifications */
+  }
+  
+  .notification-item:last-child {
+    border-bottom: none; /* Remove border from the last item */
+  }
+  
