@@ -47,7 +47,12 @@ export const NotificationProvider = ({ children }) => {
   };
 
   return (
-    <NotificationContext.Provider value={{ notifications, hasUnreadNotifications, markNotificationsAsRead }}>
+    <NotificationContext.Provider value={{ 
+      notifications, 
+      setNotifications, // Exposing setNotifications
+      hasUnreadNotifications, 
+      markNotificationsAsRead 
+    }}>
       {children}
     </NotificationContext.Provider>
   );

@@ -5,13 +5,18 @@ import './Header.css';
 import { useNotification } from '../NotificationContext';
 
 const Header = () => {
-  const { notifications, hasUnreadNotifications, markNotificationsAsRead } = useNotification();
+  const { notifications, hasUnreadNotifications, markNotificationsAsRead, setNotifications } = useNotification();
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef(null);
 
   const handleBellClick = () => {
     markNotificationsAsRead();
     setShowNotifications((prev) => !prev);
+  };
+
+  const handleClearAll = () => {
+    setNotifications([]); // Clear all notifications
+    setShowNotifications(false);
   };
 
   const handleClose = (event) => {
@@ -48,12 +53,19 @@ const Header = () => {
               <span>Notifications</span>
               <FaTimes onClick={handleClose} className="close-icon" />
             </div>
-            {notifications.length === 0 ? (
-              <div className="no-notifications">No notifications available.</div>
-            ) : (
-              notifications.map((note, index) => (
-                <div key={index} className="notification-item">{note}</div>
-              ))
+            <div className="notification-body">
+              {notifications.length === 0 ? (
+                <div className="no-notifications">No notifications available.</div>
+              ) : (
+                notifications.map((note, index) => (
+                  <div key={index} className="notification-item">{note}</div>
+                ))
+              )}
+            </div>
+            {notifications.length > 0 && (
+              <button className="clear-all-btn" onClick={handleClearAll}>
+                Clear All Notifications
+              </button>
             )}
           </div>
         )}
