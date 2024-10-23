@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import './DashboardLayout.css';
+
+// Importing icons from react-icons
+import { FaHome, FaFutbol, FaListUl, FaUsers, FaLock, FaSignOutAlt, FaComments } from 'react-icons/fa';
+import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
 import avtar from '../../assests/icons/profile.png';
-import leftArrow from '../../assests/icons/left-arrow.png';
-import rightArrow from '../../assests/icons/right-arrow.png';
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -29,17 +31,17 @@ const DashboardLayout = () => {
           <div className="sidebar-header">
             <h2>{isSidebarOpen ? 'Tennis Mate' : 'TM'}</h2>
             <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="toggle-btn">
-              <img src={isSidebarOpen ? leftArrow : rightArrow} alt="toggle arrow" />
+              {isSidebarOpen ? <MdOutlineArrowBackIos /> : <MdOutlineArrowForwardIos />}
             </button>
           </div>
           <ul className="sidebar-nav">
-            <li><Link to="/dashboard/home"><i className="icon-home"></i> {isSidebarOpen && "Home"}</Link></li>
-            <li><Link to="/dashboard/courts"><i className="icon-courts"></i> {isSidebarOpen && "Courts"}</Link></li>
-            <li><Link to="/dashboard/sports"><i className="icon-sports"></i> {isSidebarOpen && "Sports"}</Link></li>
-            <li><Link to="/dashboard/userlist"><i className="icon-users"></i> {isSidebarOpen && "User List"}</Link></li>
-            <li><Link to="/dashboard/chat"><i className="icon-chat"></i> {isSidebarOpen && "Chat"}</Link></li>
-            <li><Link to="/dashboard/change-password"><i className="icon-password"></i> {isSidebarOpen && "Change Password"}</Link></li>
-            <li><button onClick={handleLogout}><i className="icon-logout"></i> {isSidebarOpen && "Logout"}</button></li>
+            <li><Link to="/dashboard/home"><FaHome /> {isSidebarOpen && <span>Home</span>}</Link></li>
+            <li><Link to="/dashboard/courts"><FaFutbol /> {isSidebarOpen && <span>Courts</span>}</Link></li>
+            <li><Link to="/dashboard/sports"><FaListUl /> {isSidebarOpen && <span>Sports</span>}</Link></li>
+            <li><Link to="/dashboard/userlist"><FaUsers /> {isSidebarOpen && <span>User List</span>}</Link></li>
+            <li><Link to="/dashboard/chat"><FaComments /> {isSidebarOpen && <span>Chat</span>}</Link></li>
+            <li><Link to="/dashboard/change-password"><FaLock /> {isSidebarOpen && <span>Change Password</span>}</Link></li>
+            <li><button onClick={handleLogout}><FaSignOutAlt /> {isSidebarOpen && <span>Logout</span>}</button></li>
           </ul>
         </aside>
 

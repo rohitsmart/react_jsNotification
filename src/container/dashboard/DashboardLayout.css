@@ -60,6 +60,8 @@
 
 .sidebar-nav li {
   padding: 10px 20px;
+  display: flex;
+  align-items: center;
 }
 
 .sidebar-nav li a, .sidebar-nav li button {
@@ -67,33 +69,25 @@
   text-decoration: none;
   display: flex;
   align-items: center;
+  width: 100%;
+  padding: 10px;
   background: none;
   border: none;
   cursor: pointer;
-  width: 100%;
-  padding: 10px;
 }
 
 .sidebar-nav li a:hover, .sidebar-nav li button:hover {
   background-color: #34495e;
 }
 
-.sidebar-nav li i {
+/* Icon styling */
+.sidebar-nav li svg {
   margin-right: 10px;
-  font-size: 18px;
+  font-size: 20px; /* Adjust the icon size as needed */
 }
 
-/* Ensure all menu items, including logout, have the same style */
-.sidebar-nav li button {
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-}
-
-/* Responsive adjustments for when sidebar is collapsed */
-.sidebar.closed .sidebar-nav li a span,
-.sidebar.closed .sidebar-nav li button span {
+/* Ensure text is hidden when the sidebar is closed */
+.sidebar.closed .sidebar-nav li span {
   display: none;
 }
 
@@ -103,11 +97,12 @@
   border: none;
   color: #ecf0f1;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
-.toggle-btn img {
-  width: 20px;
-  height: 20px;
+.toggle-btn svg {
+  font-size: 24px; /* Adjust toggle icon size */
 }
 
 /* Profile section inside the header */
