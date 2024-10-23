@@ -2,14 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import { LOGIN_ENDPOINT } from "../api/endpoint";
 import './LoginForm.css';
-import { useNotification } from "./NotificationContext";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const addNotification = useNotification();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,15 +22,27 @@ const LoginForm = () => {
 
     try {
       const response = await axios.post(LOGIN_ENDPOINT, formData);
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("username", formData.email);
-      addNotification("Login successful!");
-      navigate("/dashboard");
+      const token = response.data.accessToken;
 
-      console.log("Login response:", response.data); // Debug log
+      // Check if token exists and save it to localStorage
+      if (token) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("username", formData.email);
+        
+        // Navigate to dashboard after successful login
+        navigate("/dashboard");
+        console.log("Login response:", response.data); // Debug log
+      } else {
+        setError("Failed to retrieve token. Please try again.");
+      }
+
     } catch (err) {
-      setError("Invalid login credentials. Please try again.");
-      console.error("Login error:", err); // Debug log
+      console.error("Login error:", err); // Log the actual error to see details
+      if (err.response && err.response.status === 401) {
+        setError("Invalid login credentials. Please try again.");
+      } else {
+        setError("An unexpected error occurred. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }

@@ -33,18 +33,19 @@
   }
   
   .notification-icon.glow {
-    color: #ff4d4d;
+    color: #28a745;
     animation: glow 1s infinite alternate;
   }
   
   @keyframes glow {
     from {
-      color: #ff4d4d;
+      color: #28a745;
     }
     to {
-      color: #ff0000;
+      color: #218838;
     }
   }
+  
   
   .notification-box {
     position: absolute;
