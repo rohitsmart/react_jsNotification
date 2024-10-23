@@ -15,7 +15,7 @@ const Header = () => {
   };
 
   const handleClearAll = () => {
-    setNotifications([]); // Clear all notifications
+    setNotifications([]);
     setShowNotifications(false);
   };
 
