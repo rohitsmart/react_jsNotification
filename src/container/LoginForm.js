@@ -27,7 +27,7 @@ const LoginForm = () => {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("username", formData.email);
       addNotification("Login successful!");
-      navigate("/dashboard/home");
+      navigate("/dashboard");
 
       console.log("Login response:", response.data); // Debug log
     } catch (err) {
