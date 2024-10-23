@@ -18,6 +18,7 @@ const Header = () => {
     event.stopPropagation();
     setShowNotifications(false);
   };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
@@ -36,6 +37,7 @@ const Header = () => {
         <img src={avtar} alt="Profile" className="profile-avatar" />
         <span className="username">{localStorage.getItem("username")}</span>
       </div>
+
       <div className="notification-section" onClick={handleBellClick} title={notifications.length === 0 ? "No notifications" : "Click to view notifications"}>
         <div className={`notification-icon ${hasUnreadNotifications ? 'glow' : ''}`}>
           <FaBell />
@@ -59,4 +61,5 @@ const Header = () => {
     </header>
   );
 };
+
 export default Header;
