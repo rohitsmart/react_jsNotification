@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container, Row, Col, Form, FormGroup, Input, Button, Label,
 } from 'reactstrap';
 
-const AddCourtForm = ({ onAddCourt }) => {
-  const [newCourt, setNewCourt] = useState({
+const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
+  const initialCourtState = {
     name: '',
     location: '',
     gameID: '',
@@ -20,46 +20,54 @@ const AddCourtForm = ({ onAddCourt }) => {
     images: [],  // This will hold File objects instead of URLs
     editableByUser: false,
     deletableByUser: false,
-  });
+  };
+
+  const [newCourt, setNewCourt] = useState(initialCourtState);
+  const [isEditing, setIsEditing] = useState(false);  // Track editing mode
+
+  // If courtToEdit is provided, populate the form with its data
+  useEffect(() => {
+    if (courtToEdit) {
+      setNewCourt(courtToEdit);
+      setIsEditing(true);  // Set editing mode
+    } else {
+      setNewCourt(initialCourtState);  // Reset to initial state when not editing
+      setIsEditing(false); // Reset editing mode
+    }
+  }, [courtToEdit]);
 
   // Handle image selection
   const handleImageUpload = (e) => {
     setNewCourt({ ...newCourt, images: Array.from(e.target.files) });
   };
 
-  const handleAddCourt = () => {
+  const handleSubmit = () => {
     if (newCourt.name && newCourt.location) {
-      const courtToAdd = {
+      const courtToSubmit = {
         ...newCourt,
         images: newCourt.images.map((imageFile) => URL.createObjectURL(imageFile))  // Convert to URLs
       };
-      onAddCourt(courtToAdd);
 
-      // Reset form
-      setNewCourt({
-        name: '',
-        location: '',
-        gameID: '',
-        tennisCourts: 0,
-        pickleballCourts: 0,
-        environment: '',
-        lighted: false,
-        surfaceQuality: '',
-        free: false,
-        link: '',
-        phone: '',
-        description: '',
-        images: [],
-        editableByUser: true,
-        deletableByUser: false,
-      });
+      if (isEditing) {
+        onEditCourt(courtToSubmit); // Call edit function if in edit mode
+      } else {
+        onAddCourt(courtToSubmit); // Call add function if in add mode
+      }
+
+      // Reset form after submission
+      handleReset();
     }
+  };
+
+  const handleReset = () => {
+    setNewCourt(initialCourtState); // Reset to initial state
+    setIsEditing(false); // Reset editing mode
   };
 
   return (
     <Container>
       <Form>
-        <h3 className="mb-4">Add New Court</h3>
+        <h3 className="mb-4">{isEditing ? 'Edit Court' : 'Add New Court'}</h3>
 
         <Row form>
           <Col md={6}>
@@ -131,23 +139,22 @@ const AddCourtForm = ({ onAddCourt }) => {
         </Row>
 
         <Row form>
-        <Col md={4}>
-  <FormGroup>
-    <Label for="environment">Environment</Label>
-    <Input
-      type="select"
-      id="environment"
-      value={newCourt.environment}
-      onChange={(e) => setNewCourt({ ...newCourt, environment: e.target.value })}
-    >
-      <option value="">Select Environment</option>
-      <option value="INDOOR">INDOOR</option>
-      <option value="OUTDOOR">OUTDOOR</option>
-      <option value="BOTH">BOTH</option>
-    </Input>
-  </FormGroup>
-</Col>
-
+          <Col md={4}>
+            <FormGroup>
+              <Label for="environment">Environment</Label>
+              <Input
+                type="select"
+                id="environment"
+                value={newCourt.environment}
+                onChange={(e) => setNewCourt({ ...newCourt, environment: e.target.value })}
+              >
+                <option value="">Select Environment</option>
+                <option value="INDOOR">INDOOR</option>
+                <option value="OUTDOOR">OUTDOOR</option>
+                <option value="BOTH">BOTH</option>
+              </Input>
+            </FormGroup>
+          </Col>
           <Col md={4}>
             <FormGroup>
               <Label for="surfaceQuality">Surface Quality</Label>
@@ -242,7 +249,12 @@ const AddCourtForm = ({ onAddCourt }) => {
           </Col>
         </Row>
 
-        <Button color="success" className="mt-3" onClick={handleAddCourt}>Add Court</Button>
+        <Button color="success" className="mt-3" onClick={handleSubmit}>
+          {isEditing ? 'Update Court' : 'Add Court'}
+        </Button>
+        <Button color="secondary" className="mt-3 ml-2" onClick={handleReset}>
+          Reset
+        </Button>
       </Form>
     </Container>
   );

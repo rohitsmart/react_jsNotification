@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Container, Row, Table, Pagination, PaginationItem, PaginationLink,
-  Button,
-} from 'reactstrap';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'; // React Icons for previous and next
+import { Container, Row, Table, Pagination, PaginationItem, PaginationLink, Button } from 'reactstrap';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import AddCourtForm from './court/AddCourtForm';
 
 const Courts = () => {
@@ -11,9 +8,10 @@ const Courts = () => {
   const [filteredCourts, setFilteredCourts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [courtsPerPage] = useState(5);
+  const [selectedCourt, setSelectedCourt] = useState(null);  // Track the court being edited
+  const [isEditMode, setIsEditMode] = useState(false);       // Track if we're in edit mode
 
   useEffect(() => {
-    // Simulated court data
     const fetchedCourts = [
       {
         name: 'Central Park Tennis Courts',
@@ -32,7 +30,6 @@ const Courts = () => {
         editableByUser: true,
         deletableByUser: false,
       },
-      // Add more courts here if needed...
     ];
     setCourts(fetchedCourts);
     setFilteredCourts(fetchedCourts);
@@ -45,19 +42,43 @@ const Courts = () => {
   const totalPages = Math.ceil(filteredCourts.length / courtsPerPage);
 
   const handlePageChange = (pageNumber) => {
-    if (pageNumber < 1 || pageNumber > totalPages) return; // Prevent going out of bounds
+    if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
   };
 
   const handleAddCourt = (newCourt) => {
-    setCourts([...courts, newCourt]);
-    setFilteredCourts([...filteredCourts, newCourt]);
+    if (isEditMode) {
+      // Edit mode: update the court
+      setCourts(
+        courts.map((court) => (court.name === selectedCourt.name ? newCourt : court))
+      );
+      setFilteredCourts(
+        filteredCourts.map((court) => (court.name === selectedCourt.name ? newCourt : court))
+      );
+    } else {
+      // Add mode: add a new court
+      setCourts([...courts, newCourt]);
+      setFilteredCourts([...filteredCourts, newCourt]);
+    }
+
+    setSelectedCourt(null);  // Reset selection after adding/editing
+    setIsEditMode(false);    // Exit edit mode
+  };
+
+  const handleEditCourt = (court) => {
+    setSelectedCourt(court);   // Set the court to edit
+    setIsEditMode(true);       // Enable edit mode
+  };
+
+  const handleDeleteCourt = (courtName) => {
+    setCourts(courts.filter((court) => court.name !== courtName));
+    setFilteredCourts(filteredCourts.filter((court) => court.name !== courtName));
   };
 
   return (
     <Container>
       <Row>
-        <AddCourtForm onAddCourt={handleAddCourt} />
+        <AddCourtForm onAddCourt={handleAddCourt} courtToEdit={selectedCourt} isEditMode={isEditMode} />
       </Row>
       <Row>
         <Table striped>
@@ -84,7 +105,12 @@ const Courts = () => {
                 <td>{court.lighted ? 'Yes' : 'No'}</td>
                 <td>{court.free ? 'Yes' : 'No'}</td>
                 <td>
-                  <Button color="danger" size="sm">Delete</Button>
+                  <Button color="primary" size="sm" onClick={() => handleEditCourt(court)}>
+                    Edit
+                  </Button>{' '}
+                  <Button color="danger" size="sm" onClick={() => handleDeleteCourt(court.name)}>
+                    Delete
+                  </Button>
                 </td>
               </tr>
             ))}
