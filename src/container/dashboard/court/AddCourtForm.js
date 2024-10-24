@@ -1,15 +1,15 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import {
-Container, Row, Col, Form, FormGroup, Input, Button, Label,
+  Container, Row, Col, Form, FormGroup, Input, Button, Label,
 } from 'reactstrap';
-import { courtAdd } from '../../../api/endpoint';
+import { courtAdd, fetchSports } from '../../../api/endpoint'; // Import API endpoints
 import toast from 'react-hot-toast';
 
 const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
-const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-const initialCourtState = {
+  const initialCourtState = {
     name: '',
     location: '',
     gameID: '',
@@ -25,26 +25,46 @@ const initialCourtState = {
     images: [],
     editableByUser: false,
     deletableByUser: false,
-};
+  };
 
-const [newCourt, setNewCourt] = useState(initialCourtState);
-const [isEditing, setIsEditing] = useState(false);
+  const [newCourt, setNewCourt] = useState(initialCourtState);
+  const [isEditing, setIsEditing] = useState(false);
+  const [sports, setSports] = useState([]); // To store the list of sports
 
-useEffect(() => {
+  useEffect(() => {
     if (courtToEdit) {
-    setNewCourt(courtToEdit);
-    setIsEditing(true);
+      setNewCourt(courtToEdit);
+      setIsEditing(true);
     } else {
-    setNewCourt(initialCourtState);
-    setIsEditing(false);
+      setNewCourt(initialCourtState);
+      setIsEditing(false);
     }
-}, [courtToEdit]);
+  }, [courtToEdit]);
 
-const handleImageUpload = (e) => {
+  useEffect(() => {
+    // Fetch sports on component mount
+    const fetchSportsList = async () => {
+      try {
+        const response = await axios.get(fetchSports, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setSports(response.data); // Set the fetched sports
+      } catch (error) {
+        console.error('Error fetching sports:', error);
+        toast.error('Failed to load sports.');
+      }
+    };
+
+    fetchSportsList();
+  }, [token]);
+
+  const handleImageUpload = (e) => {
     setNewCourt({ ...newCourt, images: Array.from(e.target.files) });
-};
+  };
 
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
     if (newCourt.name && newCourt.location) {
       const courtToSubmit = {
         ...newCourt,
@@ -53,15 +73,16 @@ const handleSubmit = async () => {
 
       try {
         const response = await axios.post(courtAdd, courtToSubmit, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-              },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
         });
 
         console.log('Court submitted successfully:', response.data);
         toast.success('Court submitted successfully!');
-        } catch (error) {
+        if (onAddCourt) onAddCourt(response.data); // Notify parent component if any
+      } catch (error) {
         if (error.response && error.response.data) {
           const { user_description } = error.response.data;
           toast.error(`${user_description}`);
@@ -77,12 +98,10 @@ const handleSubmit = async () => {
     }
   };
 
-
-
-const handleReset = () => {
+  const handleReset = () => {
     setNewCourt(initialCourtState);
     setIsEditing(false);
-};
+  };
 
   return (
     <Container>
@@ -127,8 +146,11 @@ const handleReset = () => {
                 onChange={(e) => setNewCourt({ ...newCourt, gameID: parseInt(e.target.value) })}
               >
                 <option value="">Select Sport</option>
-                <option value="1">Tennis</option>
-                <option value="2">Pickleball</option>
+                {sports.map((sport) => (
+                  <option key={sport.id} value={sport.id}>
+                    {sport.name}
+                  </option>
+                ))}
               </Input>
             </FormGroup>
           </Col>
