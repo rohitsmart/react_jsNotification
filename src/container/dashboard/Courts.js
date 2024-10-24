@@ -2,44 +2,47 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Table, Pagination, PaginationItem, PaginationLink, Button } from 'reactstrap';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import AddCourtForm from './court/AddCourtForm';
+import axios from 'axios';
+import { courtFetch } from '../../api/endpoint';
 
 const Courts = () => {
   const [courts, setCourts] = useState([]);
-  const [filteredCourts, setFilteredCourts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [courtsPerPage] = useState(5);
+  const [courtsPerPage] = useState(50);  // Adjusted to the default page size
   const [selectedCourt, setSelectedCourt] = useState(null);  // Track the court being edited
   const [isEditMode, setIsEditMode] = useState(false);       // Track if we're in edit mode
+  const [totalElements, setTotalElements] = useState(0);     // Track total elements
+  const [totalPages, setTotalPages] = useState(0);           // Track total pages
 
   useEffect(() => {
-    const fetchedCourts = [
-      {
-        name: 'Central Park Tennis Courts',
-        location: 'Central Park, New York',
-        gameID: 1,
-        tennisCourts: 4,
-        pickleballCourts: 2,
-        environment: 'OUTDOOR',
-        lighted: true,
-        surfaceQuality: 'High',
-        free: false,
-        link: 'https://www.example.com/central-park-tennis',
-        phone: '+1234567890',
-        description: 'Beautiful tennis courts located in Central Park, with night lighting available.',
-        images: ['https://www.example.com/images/court1.jpg', 'https://www.example.com/images/court2.jpg'],
-        editableByUser: true,
-        deletableByUser: false,
-      },
-    ];
-    setCourts(fetchedCourts);
-    setFilteredCourts(fetchedCourts);
-  }, []);
+    const fetchCourts = async () => {
+      try {
+        const token = localStorage.getItem('token');  // Retrieve token from local storage
+        const response = await axios.get(courtFetch, {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Set the Authorization header
+          },
+          params: {
+            page: currentPage - 1,  // Adjust for zero-based index
+            size: courtsPerPage,
+          },
+        });
+
+        const { content, totalElements, totalPages } = response.data;  // Destructure response data
+        setCourts(content);
+        setTotalElements(totalElements);
+        setTotalPages(totalPages);
+      } catch (error) {
+        console.error('Error fetching courts:', error);
+      }
+    };
+
+    fetchCourts();  // Call the function to fetch courts
+  }, [currentPage]);  // Re-fetch courts whenever currentPage changes
 
   const indexOfLastCourt = currentPage * courtsPerPage;
   const indexOfFirstCourt = indexOfLastCourt - courtsPerPage;
-  const currentCourts = filteredCourts.slice(indexOfFirstCourt, indexOfLastCourt);
-
-  const totalPages = Math.ceil(filteredCourts.length / courtsPerPage);
+  const currentCourts = courts.slice(indexOfFirstCourt, indexOfLastCourt);
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
@@ -49,18 +52,11 @@ const Courts = () => {
   const handleAddCourt = (newCourt) => {
     if (isEditMode) {
       // Edit mode: update the court
-      setCourts(
-        courts.map((court) => (court.name === selectedCourt.name ? newCourt : court))
-      );
-      setFilteredCourts(
-        filteredCourts.map((court) => (court.name === selectedCourt.name ? newCourt : court))
-      );
+      setCourts(courts.map((court) => (court.name === selectedCourt.name ? newCourt : court)));
     } else {
       // Add mode: add a new court
       setCourts([...courts, newCourt]);
-      setFilteredCourts([...filteredCourts, newCourt]);
     }
-
     setSelectedCourt(null);  // Reset selection after adding/editing
     setIsEditMode(false);    // Exit edit mode
   };
@@ -72,7 +68,6 @@ const Courts = () => {
 
   const handleDeleteCourt = (courtName) => {
     setCourts(courts.filter((court) => court.name !== courtName));
-    setFilteredCourts(filteredCourts.filter((court) => court.name !== courtName));
   };
 
   return (
@@ -86,8 +81,6 @@ const Courts = () => {
             <tr>
               <th>Name</th>
               <th>Location</th>
-              <th>Tennis Courts</th>
-              <th>Pickleball Courts</th>
               <th>Environment</th>
               <th>Lighted</th>
               <th>Free</th>
@@ -99,8 +92,6 @@ const Courts = () => {
               <tr key={index}>
                 <td>{court.name}</td>
                 <td>{court.location}</td>
-                <td>{court.tennisCourts}</td>
-                <td>{court.pickleballCourts}</td>
                 <td>{court.environment}</td>
                 <td>{court.lighted ? 'Yes' : 'No'}</td>
                 <td>{court.free ? 'Yes' : 'No'}</td>

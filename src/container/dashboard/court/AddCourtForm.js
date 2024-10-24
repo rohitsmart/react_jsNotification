@@ -70,7 +70,7 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
         ...newCourt,
         images: newCourt.images.map((imageFile) => URL.createObjectURL(imageFile)),
       };
-
+      console.log("court to submitt:",courtToSubmit)
       try {
         const response = await axios.post(courtAdd, courtToSubmit, {
           headers: {
@@ -81,7 +81,7 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
 
         console.log('Court submitted successfully:', response.data);
         toast.success('Court submitted successfully!');
-        if (onAddCourt) onAddCourt(response.data); // Notify parent component if any
+        if (onAddCourt) onAddCourt(response.data);
       } catch (error) {
         if (error.response && error.response.data) {
           const { user_description } = error.response.data;
