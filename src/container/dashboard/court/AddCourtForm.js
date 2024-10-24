@@ -29,6 +29,7 @@ const AddCourtForm = ({ onAddCourt, courtToEdit }) => {
   const [newCourt, setNewCourt] = useState(initialCourtState);
   const [isEditing, setIsEditing] = useState(false);
   const [sports, setSports] = useState([]);
+  const [csvFile, setCsvFile] = useState(null);
 
   useEffect(() => {
     const fetchSportsList = async () => {
@@ -62,6 +63,9 @@ const AddCourtForm = ({ onAddCourt, courtToEdit }) => {
     }
 }, [courtToEdit]);
 
+const handleCsvUpload = (e) => {
+    setCsvFile(e.target.files[0]);
+  };
 
   const handleImageUpload = (e) => {
     setNewCourt({ ...newCourt, images: Array.from(e.target.files) });
@@ -293,12 +297,33 @@ const AddCourtForm = ({ onAddCourt, courtToEdit }) => {
           </Col>
         </Row>
 
-        <Button color="primary" onClick={handleSubmit}>
-          {isEditing ? 'Update Court' : 'Add Court'}
-        </Button>
-        <Button color="secondary" onClick={handleReset} className="ml-2">
-          Reset
-        </Button>
+        <Row form>
+          <Col md={12}>
+            <FormGroup>
+              <Label for="csvFile">Upload Courts CSV</Label>
+              <Input
+                type="file"
+                id="csvFile"
+                accept=".csv"
+                onChange={handleCsvUpload}
+              />
+            </FormGroup>
+          </Col>
+        </Row>
+
+        <Row className="mt-4">
+          <Col md={3}>
+            <Button color="primary" onClick={handleSubmit} className="w-50">
+              {isEditing ? 'Update Court' : 'Add Court'}
+            </Button>
+          </Col>
+          <Col md={3}>
+            <Button color="secondary" onClick={handleReset} className="w-50">
+              Reset
+            </Button>
+          </Col>
+        </Row>
+        
       </Form>
     </Container>
   );
