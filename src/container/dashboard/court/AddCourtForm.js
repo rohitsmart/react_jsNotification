@@ -17,16 +17,25 @@ const AddCourtForm = ({ onAddCourt }) => {
     link: '',
     phone: '',
     description: '',
-    images: '',
-    editableByUser: true,
+    images: [],  // This will hold File objects instead of URLs
+    editableByUser: false,
     deletableByUser: false,
   });
 
+  // Handle image selection
+  const handleImageUpload = (e) => {
+    setNewCourt({ ...newCourt, images: Array.from(e.target.files) });
+  };
+
   const handleAddCourt = () => {
     if (newCourt.name && newCourt.location) {
-      // Convert images input from string to array of URLs
-      const courtToAdd = { ...newCourt, images: newCourt.images.split(',').map(img => img.trim()) };
+      const courtToAdd = {
+        ...newCourt,
+        images: newCourt.images.map((imageFile) => URL.createObjectURL(imageFile))  // Convert to URLs
+      };
       onAddCourt(courtToAdd);
+
+      // Reset form
       setNewCourt({
         name: '',
         location: '',
@@ -40,7 +49,7 @@ const AddCourtForm = ({ onAddCourt }) => {
         link: '',
         phone: '',
         description: '',
-        images: '',
+        images: [],
         editableByUser: true,
         deletableByUser: false,
       });
@@ -50,7 +59,8 @@ const AddCourtForm = ({ onAddCourt }) => {
   return (
     <Container>
       <Form>
-        <h3>Add New Court</h3>
+        <h3 className="mb-4">Add New Court</h3>
+
         <Row form>
           <Col md={6}>
             <FormGroup>
@@ -77,6 +87,7 @@ const AddCourtForm = ({ onAddCourt }) => {
             </FormGroup>
           </Col>
         </Row>
+
         <Row form>
           <Col md={6}>
             <FormGroup>
@@ -99,8 +110,9 @@ const AddCourtForm = ({ onAddCourt }) => {
               <Input
                 type="number"
                 id="tennisCourts"
+                min="0"
                 value={newCourt.tennisCourts}
-                onChange={(e) => setNewCourt({ ...newCourt, tennisCourts: e.target.value })}
+                onChange={(e) => setNewCourt({ ...newCourt, tennisCourts: parseInt(e.target.value) })}
               />
             </FormGroup>
           </Col>
@@ -110,25 +122,32 @@ const AddCourtForm = ({ onAddCourt }) => {
               <Input
                 type="number"
                 id="pickleballCourts"
+                min="0"
                 value={newCourt.pickleballCourts}
-                onChange={(e) => setNewCourt({ ...newCourt, pickleballCourts: e.target.value })}
+                onChange={(e) => setNewCourt({ ...newCourt, pickleballCourts: parseInt(e.target.value) })}
               />
             </FormGroup>
           </Col>
         </Row>
+
         <Row form>
-          <Col md={4}>
-            <FormGroup>
-              <Label for="environment">Environment</Label>
-              <Input
-                type="text"
-                id="environment"
-                placeholder="INDOOR/OUTDOOR"
-                value={newCourt.environment}
-                onChange={(e) => setNewCourt({ ...newCourt, environment: e.target.value })}
-              />
-            </FormGroup>
-          </Col>
+        <Col md={4}>
+  <FormGroup>
+    <Label for="environment">Environment</Label>
+    <Input
+      type="select"
+      id="environment"
+      value={newCourt.environment}
+      onChange={(e) => setNewCourt({ ...newCourt, environment: e.target.value })}
+    >
+      <option value="">Select Environment</option>
+      <option value="INDOOR">INDOOR</option>
+      <option value="OUTDOOR">OUTDOOR</option>
+      <option value="BOTH">BOTH</option>
+    </Input>
+  </FormGroup>
+</Col>
+
           <Col md={4}>
             <FormGroup>
               <Label for="surfaceQuality">Surface Quality</Label>
@@ -166,6 +185,7 @@ const AddCourtForm = ({ onAddCourt }) => {
             </FormGroup>
           </Col>
         </Row>
+
         <Row form>
           <Col md={6}>
             <FormGroup>
@@ -192,6 +212,7 @@ const AddCourtForm = ({ onAddCourt }) => {
             </FormGroup>
           </Col>
         </Row>
+
         <Row form>
           <Col md={12}>
             <FormGroup>
@@ -206,21 +227,22 @@ const AddCourtForm = ({ onAddCourt }) => {
             </FormGroup>
           </Col>
         </Row>
+
         <Row form>
           <Col md={12}>
             <FormGroup>
-              <Label for="images">Images (comma separated URLs)</Label>
+              <Label for="images">Upload Images</Label>
               <Input
-                type="text"
+                type="file"
                 id="images"
-                placeholder="Image URLs"
-                value={newCourt.images}
-                onChange={(e) => setNewCourt({ ...newCourt, images: e.target.value })}
+                multiple
+                onChange={handleImageUpload}
               />
             </FormGroup>
           </Col>
         </Row>
-        <Button color="success" onClick={handleAddCourt}>Add Court</Button>
+
+        <Button color="success" className="mt-3" onClick={handleAddCourt}>Add Court</Button>
       </Form>
     </Container>
   );

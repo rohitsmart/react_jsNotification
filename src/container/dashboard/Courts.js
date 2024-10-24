@@ -3,6 +3,7 @@ import {
   Container, Row, Table, Pagination, PaginationItem, PaginationLink,
   Button,
 } from 'reactstrap';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'; // React Icons for previous and next
 import AddCourtForm from './court/AddCourtForm';
 
 const Courts = () => {
@@ -41,7 +42,12 @@ const Courts = () => {
   const indexOfFirstCourt = indexOfLastCourt - courtsPerPage;
   const currentCourts = filteredCourts.slice(indexOfFirstCourt, indexOfLastCourt);
 
-  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+  const totalPages = Math.ceil(filteredCourts.length / courtsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber < 1 || pageNumber > totalPages) return; // Prevent going out of bounds
+    setCurrentPage(pageNumber);
+  };
 
   const handleAddCourt = (newCourt) => {
     setCourts([...courts, newCourt]);
@@ -85,15 +91,25 @@ const Courts = () => {
           </tbody>
         </Table>
       </Row>
-      <Row>
+      <Row className="justify-content-center">
         <Pagination>
-          {[...Array(Math.ceil(filteredCourts.length / courtsPerPage)).keys()].map((pageNumber) => (
+          <PaginationItem disabled={currentPage === 1}>
+            <PaginationLink previous onClick={() => handlePageChange(currentPage - 1)}>
+              <FaArrowLeft />
+            </PaginationLink>
+          </PaginationItem>
+          {[...Array(totalPages).keys()].map((pageNumber) => (
             <PaginationItem key={pageNumber + 1} active={pageNumber + 1 === currentPage}>
               <PaginationLink onClick={() => handlePageChange(pageNumber + 1)}>
                 {pageNumber + 1}
               </PaginationLink>
             </PaginationItem>
           ))}
+          <PaginationItem disabled={currentPage === totalPages}>
+            <PaginationLink next onClick={() => handlePageChange(currentPage + 1)}>
+              <FaArrowRight />
+            </PaginationLink>
+          </PaginationItem>
         </Pagination>
       </Row>
     </Container>
