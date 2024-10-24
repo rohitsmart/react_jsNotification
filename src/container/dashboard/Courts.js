@@ -14,30 +14,30 @@ const Courts = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
+  const fetchCourts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(courtFetch, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          page: currentPage - 1,
+          size: courtsPerPage,
+        },
+      });
+
+      const { content, totalElements, totalPages } = response.data; 
+      setCourts(content);
+      setTotalElements(totalElements);
+      setTotalPages(totalPages);
+    } catch (error) {
+      console.error('Error fetching courts:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchCourts = async () => {
-      try {
-        const token = localStorage.getItem('token');  // Retrieve token from local storage
-        const response = await axios.get(courtFetch, {
-          headers: {
-            Authorization: `Bearer ${token}`,  // Set the Authorization header
-          },
-          params: {
-            page: currentPage - 1,  // Adjust for zero-based index
-            size: courtsPerPage,
-          },
-        });
-
-        const { content, totalElements, totalPages } = response.data;  // Destructure response data
-        setCourts(content);
-        setTotalElements(totalElements);
-        setTotalPages(totalPages);
-      } catch (error) {
-        console.error('Error fetching courts:', error);
-      }
-    };
-
-    fetchCourts();  // Call the function to fetch courts
+    fetchCourts();
   }, [currentPage]);
 
   const indexOfLastCourt = currentPage * courtsPerPage;
@@ -50,14 +50,13 @@ const Courts = () => {
 
   const handleAddCourt = (newCourt) => {
     if (isEditMode) {
-      // Edit mode: update the court
       setCourts(courts.map((court) => (court.name === selectedCourt.name ? newCourt : court)));
     } else {
-      // Add mode: add a new court
       setCourts([...courts, newCourt]);
     }
-    setSelectedCourt(null);  // Reset selection after adding/editing
-    setIsEditMode(false);    // Exit edit mode
+    fetchCourts();
+    setSelectedCourt(null);
+    setIsEditMode(false);
   };
   const handleEditCourt = (court) => {
     setSelectedCourt(court); 

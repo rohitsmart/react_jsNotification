@@ -6,7 +6,7 @@ import {
 import { courtAdd, fetchSports } from '../../../api/endpoint'; // Import API endpoints
 import toast from 'react-hot-toast';
 
-const AddCourtForm = ({ onAddCourt, courtToEdit }) => {
+const AddCourtForm = ({ onAddCourt, courtToEdit,fetchCourts }) => {
   const token = localStorage.getItem("token");
   const initialCourtState = {
     name: '',
@@ -72,43 +72,38 @@ const handleCsvUpload = (e) => {
   };
 
   const handleSubmit = async () => {
-    if (newCourt.name && newCourt.location) {
-      const courtToSubmit = {
-        ...newCourt,
-        images: newCourt.images.map((imageFile) => URL.createObjectURL(imageFile)),
-      };
-      console.log("court to submit:", courtToSubmit);
-      try {
-        const response = await axios.post(courtAdd, courtToSubmit, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        console.log('Court submitted successfully:', response.data);
-        toast.success('Court submitted successfully!');
-        if (onAddCourt) onAddCourt(response.data);
-      } catch (error) {
-        if (error.response && error.response.data) {
-          const { user_description } = error.response.data;
-          toast.error(`${user_description}`);
-        } else {
-          toast.error('An unexpected error occurred.');
-        }
-        console.error('Error submitting court:', error);
-      } finally {
-        handleReset();
-      }
-    } else {
-      toast.error('Court name and location are required.');
+    if (!newCourt.name || !newCourt.location) {
+    toast.error('Court name and location are required.');
+    return;
     }
-  };
+    const courtToSubmit = {
+    ...newCourt,
+    images: newCourt.images.map((imageFile) => URL.createObjectURL(imageFile)),
+    };
+    console.log("Court to submit:", courtToSubmit);
+    try {
+    const response = await axios.post(courtAdd, courtToSubmit, {
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        },
+    });
+    console.log('Court submitted successfully:', response.data);
+    toast.success('Court submitted successfully!');
+    if (onAddCourt) onAddCourt(response.data);
+    handleReset();
+    fetchCourts();
+    } catch (error) {
+    const errorMessage = error.response?.data?.user_description || 'An unexpected error occurred.';
+    toast.error(errorMessage);
+    console.error('Error submitting court:', error);
+    }
+};
 
-  const handleReset = () => {
+const handleReset = () => {
     setNewCourt(initialCourtState);
     setIsEditing(false);
-  };
+};
 
   return (
     <Container>
