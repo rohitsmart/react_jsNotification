@@ -8,11 +8,11 @@ import { courtFetch } from '../../api/endpoint';
 const Courts = () => {
   const [courts, setCourts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [courtsPerPage] = useState(50);  // Adjusted to the default page size
-  const [selectedCourt, setSelectedCourt] = useState(null);  // Track the court being edited
-  const [isEditMode, setIsEditMode] = useState(false);       // Track if we're in edit mode
-  const [totalElements, setTotalElements] = useState(0);     // Track total elements
-  const [totalPages, setTotalPages] = useState(0);           // Track total pages
+  const [courtsPerPage] = useState(50);
+  const [selectedCourt, setSelectedCourt] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     const fetchCourts = async () => {
@@ -38,12 +38,11 @@ const Courts = () => {
     };
 
     fetchCourts();  // Call the function to fetch courts
-  }, [currentPage]);  // Re-fetch courts whenever currentPage changes
+  }, [currentPage]);
 
   const indexOfLastCourt = currentPage * courtsPerPage;
   const indexOfFirstCourt = indexOfLastCourt - courtsPerPage;
   const currentCourts = courts.slice(indexOfFirstCourt, indexOfLastCourt);
-
   const handlePageChange = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
@@ -60,16 +59,13 @@ const Courts = () => {
     setSelectedCourt(null);  // Reset selection after adding/editing
     setIsEditMode(false);    // Exit edit mode
   };
-
   const handleEditCourt = (court) => {
-    setSelectedCourt(court);   // Set the court to edit
-    setIsEditMode(true);       // Enable edit mode
+    setSelectedCourt(court); 
+    setIsEditMode(true);
   };
-
   const handleDeleteCourt = (courtName) => {
     setCourts(courts.filter((court) => court.name !== courtName));
   };
-
   return (
     <Container>
       <Row>

@@ -6,9 +6,8 @@ import {
 import { courtAdd, fetchSports } from '../../../api/endpoint'; // Import API endpoints
 import toast from 'react-hot-toast';
 
-const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
+const AddCourtForm = ({ onAddCourt, courtToEdit }) => {
   const token = localStorage.getItem("token");
-
   const initialCourtState = {
     name: '',
     location: '',
@@ -29,20 +28,9 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
 
   const [newCourt, setNewCourt] = useState(initialCourtState);
   const [isEditing, setIsEditing] = useState(false);
-  const [sports, setSports] = useState([]); // To store the list of sports
+  const [sports, setSports] = useState([]);
 
   useEffect(() => {
-    if (courtToEdit) {
-      setNewCourt(courtToEdit);
-      setIsEditing(true);
-    } else {
-      setNewCourt(initialCourtState);
-      setIsEditing(false);
-    }
-  }, [courtToEdit]);
-
-  useEffect(() => {
-    // Fetch sports on component mount
     const fetchSportsList = async () => {
       try {
         const response = await axios.get(fetchSports, {
@@ -50,15 +38,30 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
             'Authorization': `Bearer ${token}`,
           },
         });
-        setSports(response.data); // Set the fetched sports
+        setSports(response.data);
       } catch (error) {
         console.error('Error fetching sports:', error);
         toast.error('Failed to load sports.');
       }
     };
-
     fetchSportsList();
   }, [token]);
+
+  useEffect(() => {
+    console.log('courtToEdit:', courtToEdit);
+    console.log('sports:', sports);
+    if (courtToEdit) {
+        setNewCourt({
+            ...courtToEdit,
+            gameID: courtToEdit.sportsId || '',
+        });
+        setIsEditing(true);
+    } else {
+        setNewCourt(initialCourtState);
+        setIsEditing(false);
+    }
+}, [courtToEdit]);
+
 
   const handleImageUpload = (e) => {
     setNewCourt({ ...newCourt, images: Array.from(e.target.files) });
@@ -70,7 +73,7 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
         ...newCourt,
         images: newCourt.images.map((imageFile) => URL.createObjectURL(imageFile)),
       };
-      console.log("court to submitt:",courtToSubmit)
+      console.log("court to submit:", courtToSubmit);
       try {
         const response = await axios.post(courtAdd, courtToSubmit, {
           headers: {
@@ -143,8 +146,7 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
                 type="select"
                 id="gameID"
                 value={newCourt.gameID}
-                onChange={(e) => setNewCourt({ ...newCourt, gameID: parseInt(e.target.value) })}
-              >
+                onChange={(e) => setNewCourt({ ...newCourt, gameID: parseInt(e.target.value) })}>
                 <option value="">Select Sport</option>
                 {sports.map((sport) => (
                   <option key={sport.id} value={sport.id}>
@@ -238,6 +240,18 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
         <Row form>
           <Col md={6}>
             <FormGroup>
+              <Label for="link">Website Link</Label>
+              <Input
+                type="text"
+                id="link"
+                placeholder="Website Link"
+                value={newCourt.link}
+                onChange={(e) => setNewCourt({ ...newCourt, link: e.target.value })}
+              />
+            </FormGroup>
+          </Col>
+          <Col md={6}>
+            <FormGroup>
               <Label for="phone">Phone</Label>
               <Input
                 type="text"
@@ -245,18 +259,6 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
                 placeholder="Phone"
                 value={newCourt.phone}
                 onChange={(e) => setNewCourt({ ...newCourt, phone: e.target.value })}
-              />
-            </FormGroup>
-          </Col>
-          <Col md={6}>
-            <FormGroup>
-              <Label for="link">Website</Label>
-              <Input
-                type="url"
-                id="link"
-                placeholder="Court Link"
-                value={newCourt.link}
-                onChange={(e) => setNewCourt({ ...newCourt, link: e.target.value })}
               />
             </FormGroup>
           </Col>
@@ -269,7 +271,7 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
               <Input
                 type="textarea"
                 id="description"
-                placeholder="Enter court description"
+                rows="3"
                 value={newCourt.description}
                 onChange={(e) => setNewCourt({ ...newCourt, description: e.target.value })}
               />
@@ -291,10 +293,10 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
           </Col>
         </Row>
 
-        <Button color="success" className="mt-3" onClick={handleSubmit}>
+        <Button color="primary" onClick={handleSubmit}>
           {isEditing ? 'Update Court' : 'Add Court'}
         </Button>
-        <Button color="secondary" className="mt-3 ml-2" onClick={handleReset}>
+        <Button color="secondary" onClick={handleReset} className="ml-2">
           Reset
         </Button>
       </Form>
