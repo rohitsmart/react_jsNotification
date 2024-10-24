@@ -1,10 +1,15 @@
+import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import {
-  Container, Row, Col, Form, FormGroup, Input, Button, Label,
+Container, Row, Col, Form, FormGroup, Input, Button, Label,
 } from 'reactstrap';
+import { courtAdd } from '../../../api/endpoint';
+import toast from 'react-hot-toast';
 
 const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
-  const initialCourtState = {
+const token = localStorage.getItem("token");
+
+const initialCourtState = {
     name: '',
     location: '',
     gameID: '',
@@ -17,52 +22,67 @@ const AddCourtForm = ({ onAddCourt, onEditCourt, courtToEdit }) => {
     link: '',
     phone: '',
     description: '',
-    images: [],  // This will hold File objects instead of URLs
+    images: [],
     editableByUser: false,
     deletableByUser: false,
-  };
+};
 
-  const [newCourt, setNewCourt] = useState(initialCourtState);
-  const [isEditing, setIsEditing] = useState(false);  // Track editing mode
+const [newCourt, setNewCourt] = useState(initialCourtState);
+const [isEditing, setIsEditing] = useState(false);
 
-  // If courtToEdit is provided, populate the form with its data
-  useEffect(() => {
+useEffect(() => {
     if (courtToEdit) {
-      setNewCourt(courtToEdit);
-      setIsEditing(true);  // Set editing mode
+    setNewCourt(courtToEdit);
+    setIsEditing(true);
     } else {
-      setNewCourt(initialCourtState);  // Reset to initial state when not editing
-      setIsEditing(false); // Reset editing mode
+    setNewCourt(initialCourtState);
+    setIsEditing(false);
     }
-  }, [courtToEdit]);
+}, [courtToEdit]);
 
-  // Handle image selection
-  const handleImageUpload = (e) => {
+const handleImageUpload = (e) => {
     setNewCourt({ ...newCourt, images: Array.from(e.target.files) });
-  };
+};
 
-  const handleSubmit = () => {
+const handleSubmit = async () => {
     if (newCourt.name && newCourt.location) {
       const courtToSubmit = {
         ...newCourt,
-        images: newCourt.images.map((imageFile) => URL.createObjectURL(imageFile))  // Convert to URLs
+        images: newCourt.images.map((imageFile) => URL.createObjectURL(imageFile)),
       };
 
-      if (isEditing) {
-        onEditCourt(courtToSubmit); // Call edit function if in edit mode
-      } else {
-        onAddCourt(courtToSubmit); // Call add function if in add mode
-      }
+      try {
+        const response = await axios.post(courtAdd, courtToSubmit, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+        });
 
-      // Reset form after submission
-      handleReset();
+        console.log('Court submitted successfully:', response.data);
+        toast.success('Court submitted successfully!');
+        } catch (error) {
+        if (error.response && error.response.data) {
+          const { user_description } = error.response.data;
+          toast.error(`${user_description}`);
+        } else {
+          toast.error('An unexpected error occurred.');
+        }
+        console.error('Error submitting court:', error);
+      } finally {
+        handleReset();
+      }
+    } else {
+      toast.error('Court name and location are required.');
     }
   };
 
-  const handleReset = () => {
-    setNewCourt(initialCourtState); // Reset to initial state
-    setIsEditing(false); // Reset editing mode
-  };
+
+
+const handleReset = () => {
+    setNewCourt(initialCourtState);
+    setIsEditing(false);
+};
 
   return (
     <Container>
