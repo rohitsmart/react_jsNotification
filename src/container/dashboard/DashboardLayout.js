@@ -7,7 +7,7 @@ import Home from './Home';
 import Courts from './Courts';
 import Sports from './Sports';
 import UserList from './UserList';
-import Chat from './Chat';
+import Chat from './court/Chat';
 import ChangePassword from './ChangePassword';
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
