@@ -1,0 +1,35 @@
+/* chat.css */
+
+.chat-interface {
+    height: 100vh;
+  }
+  
+  .user-sidebar {
+    background-color: #f8f9fa;
+  }
+  
+  .chat-body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .chat-message {
+    margin-bottom: 0.5rem;
+  }
+  
+  .chat-message .bg-primary {
+    max-width: 70%;
+    border-radius: 15px 15px 0 15px;
+  }
+  
+  .chat-message .bg-light {
+    max-width: 70%;
+    border-radius: 15px 15px 15px 0;
+  }
+  

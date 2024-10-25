@@ -1,0 +1,41 @@
+/* chat.css */
+
+.chat-interface {
+    height: 100vh;
+    background-color: #f0f2f5;
+  }
+  
+  .user-sidebar {
+    height: 100%;
+  }
+  
+  .user-item:hover, .user-item.active {
+    background-color: #e9ecef !important;
+    color: #495057;
+  }
+  
+  .chat-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .chat-messages {
+    overflow-y: auto;
+    max-height: calc(100vh - 160px);
+  }
+  
+  .chat-message {
+    margin-bottom: 0.5rem;
+  }
+  
+  .chat-message .bg-primary {
+    max-width: 75%;
+    border-radius: 10px 10px 0 10px;
+  }
+  
+  .chat-message .bg-light {
+    max-width: 75%;
+    border-radius: 10px 10px 10px 0;
+  }
+  

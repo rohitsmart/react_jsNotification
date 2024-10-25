@@ -6,11 +6,11 @@ import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md'
 import Home from './Home';
 import Courts from './Courts';
 import Sports from './Sports';
-import UserList from './UserList';
 import Chat from './court/Chat';
 import ChangePassword from './ChangePassword';
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
+import UserList from "./user/UserList";
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
