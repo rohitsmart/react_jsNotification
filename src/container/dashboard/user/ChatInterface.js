@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import axios from 'axios';
-import { Client } from '@stomp/stompjs'; // Import the STOMP client
+import { Client } from '@stomp/stompjs';
 import UserSidebar from './UserSidebar';
 import ChatBody from './ChatBody';
 import { fetchUsersList } from '../../../api/endpoint';
+import { WEBSOCKET_CONNECTION } from '../../../api/endpoint';
 import './chat.css';
 
 const ChatInterface = () => {
@@ -39,10 +40,9 @@ const ChatInterface = () => {
       }
     };
 
-    // Connect to the WebSocket server
     const connectWebSocket = () => {
       const client = new Client({
-        brokerURL: 'ws://localhost:8080/api/protected/chat', // Update with your WebSocket URL
+        brokerURL: WEBSOCKET_CONNECTION,
         connectHeaders: {
           Authorization: `Bearer ${token}`,
         },
@@ -68,13 +68,12 @@ const ChatInterface = () => {
     fetchUsers();
     connectWebSocket();
 
-    // Clean up the WebSocket connection on component unmount
     return () => {
       if (stompClient) {
         stompClient.deactivate();
       }
     };
-  }, [token, selectedUser]); // Add selectedUser as a dependency
+  }, [token, selectedUser]);
 
   const subscribeToMessages = (userId) => {
     if (stompClient) {
@@ -94,7 +93,7 @@ const ChatInterface = () => {
         },
       });
       setMessages(response.data);
-      subscribeToMessages(user.id); // Subscribe to messages for the selected user
+      subscribeToMessages(user.id);
     } catch (error) {
       console.error(`Error fetching messages for user ${user.id}:`, error);
       setMessages([]);
@@ -103,10 +102,10 @@ const ChatInterface = () => {
 
   const handleSendMessage = (text) => {
     if (stompClient && selectedUser) {
-      const newMessage = { text, isMine: true }; // Prepare new message
+      const newMessage = { text, isMine: true };
       stompClient.publish({
-        destination: `/app/private.${selectedUser.id}`, // Publish to the correct destination
-        body: JSON.stringify(newMessage), // Convert message to JSON
+        destination: `/app/private.${selectedUser.id}`,
+        body: JSON.stringify(newMessage),
       });
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     }
