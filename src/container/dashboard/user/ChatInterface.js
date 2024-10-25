@@ -4,6 +4,7 @@ import axios from 'axios';
 import UserSidebar from './UserSidebar';
 import ChatBody from './ChatBody';
 import { fetchUsersList } from '../../../api/endpoint';
+import './chat.css';
 
 const ChatInterface = () => {
   const [users, setUsers] = useState([]);
@@ -15,16 +16,15 @@ const ChatInterface = () => {
     currentPage: 0,
   });
   
-  const token = localStorage.getItem('token'); // Retrieving the token from localStorage
+  const token = localStorage.getItem('token');
 
-  // Fetch Users on Component Mount
   useEffect(() => {
     const fetchUsers = async (page = 0) => {
       try {
         const response = await axios.get(fetchUsersList, {
           params: { page },
           headers: {
-            Authorization: `Bearer ${token}`, // Adding token to the request header
+            Authorization: `Bearer ${token}`,
           },
         });
         
@@ -37,10 +37,9 @@ const ChatInterface = () => {
       }
     };
     
-    fetchUsers(); // Fetch first page on load
+    fetchUsers();
   }, [token]);
 
-  // Fetch Messages for Selected User
   const handleSelectUser = async (user) => {
     setSelectedUser(user);
     try {
@@ -49,14 +48,13 @@ const ChatInterface = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setMessages(response.data); // Assuming response contains an array of messages
+      setMessages(response.data);
     } catch (error) {
       console.error(`Error fetching messages for user ${user.id}:`, error);
       setMessages([]);
     }
   };
 
-  // Send Message to API and Update Messages
   const handleSendMessage = async (text) => {
     const newMessage = { text, isMine: true };
     try {
@@ -76,7 +74,7 @@ const ChatInterface = () => {
   };
 
   return (
-    <Container fluid className="chat-interface vh-100">
+    <Container fluid className="chat-interface">
       <Row className="h-100">
         <Col md={3} className="border-end p-0 bg-light">
           <UserSidebar users={users} selectedUser={selectedUser} onSelectUser={handleSelectUser} />
