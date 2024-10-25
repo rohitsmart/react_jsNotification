@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import axios from 'axios';
-import { Client } from '@stomp/stompjs';
 import UserSidebar from './UserSidebar';
 import ChatBody from './ChatBody';
 import { fetchUsersList } from '../../../api/endpoint';
-import { WEBSOCKET_CONNECTION } from '../../../api/endpoint';
-import './chat.css';
+import {
+  connectWebSocket,
+  subscribeToUserMessages,
+  sendMessage,
+  disconnectWebSocket,
+} from '../../components/websocketService';
 
 const ChatInterface = () => {
   const [users, setUsers] = useState([]);
@@ -17,96 +20,66 @@ const ChatInterface = () => {
     totalElements: 0,
     currentPage: 0,
   });
-
   const token = localStorage.getItem('token');
-  const [stompClient, setStompClient] = useState(null);
 
   useEffect(() => {
-    const fetchUsers = async (page = 0) => {
+    const fetchUsers = async () => {
       try {
         const response = await axios.get(fetchUsersList, {
-          params: { page },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          params: { page: pagination.currentPage },
+          headers: { Authorization: `Bearer ${token}` },
         });
-        
         const { users, totalPages, totalElements, currentPage } = response.data;
-        
-        setUsers(users); 
+        setUsers(users);
         setPagination({ totalPages, totalElements, currentPage });
       } catch (error) {
         console.error('Error fetching users:', error);
       }
     };
-
-    const connectWebSocket = () => {
-      const client = new Client({
-        brokerURL: WEBSOCKET_CONNECTION,
-        connectHeaders: {
-          Authorization: `Bearer ${token}`,
-        },
-        debug: (str) => {
-          console.log(str);
-        },
-        onConnect: () => {
-          console.log('WebSocket connected');
-          if (selectedUser) {
-            subscribeToMessages(selectedUser.id);
-          }
-        },
-        onStompError: (frame) => {
-          console.error('Broker reported error: ' + frame.headers['message']);
-          console.error('Additional details: ' + frame.body);
-        },
-      });
-
-      client.activate();
-      setStompClient(client);
-    };
-
     fetchUsers();
-    connectWebSocket();
+  }, [token, pagination.currentPage]);
 
+  useEffect(() => {
+    connectWebSocket(onConnected, onError);
     return () => {
-      if (stompClient) {
-        stompClient.deactivate();
-      }
+      disconnectWebSocket();
     };
-  }, [token, selectedUser]);
+  }, []);
 
-  const subscribeToMessages = (userId) => {
-    if (stompClient) {
-      stompClient.subscribe(`/user/${userId}/queue/messages`, (message) => {
-        const receivedMessage = JSON.parse(message.body);
-        setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-      });
+  useEffect(() => {
+    if (selectedUser) {
+      subscribeToUserMessages(selectedUser.id, handleMessageReceived);
     }
+  }, [selectedUser]);
+
+  const onConnected = () => {
+    console.log('Connected to WebSocket');
+  };
+
+  const onError = (error) => {
+    console.error('WebSocket connection error:', error);
+  };
+
+  const handleMessageReceived = (message) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
   };
 
   const handleSelectUser = async (user) => {
     setSelectedUser(user);
     try {
       const response = await axios.get(`${fetchUsersList}/${user.id}/messages`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setMessages(response.data);
-      subscribeToMessages(user.id);
     } catch (error) {
       console.error(`Error fetching messages for user ${user.id}:`, error);
-      setMessages([]);
     }
   };
 
   const handleSendMessage = (text) => {
-    if (stompClient && selectedUser) {
+    if (selectedUser) {
       const newMessage = { text, isMine: true };
-      stompClient.publish({
-        destination: `/app/private.${selectedUser.id}`,
-        body: JSON.stringify(newMessage),
-      });
+      sendMessage(selectedUser.id, newMessage);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     }
   };

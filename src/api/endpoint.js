@@ -7,8 +7,7 @@ export const courtFetch = `${API_BASE_URL}private/court/fetch`;
 export const fetchSports = `${API_BASE_URL}private/sports/fetch`;
 export const fetchUsersList = `${API_BASE_URL}protected/user/fetch-all`;
 
-export const WS_BASE_URL = "ws://localhost:8080/ws";
-export const WEBSOCKET_CONNECTION = `${WS_BASE_URL}`;
+export const WEBSOCKET_CONNECTION = `${API_BASE_URL}public/ws`;
 
 export const MESSAGE_TYPES = {
     PRIVATE: "private",
