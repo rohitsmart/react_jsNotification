@@ -39,15 +39,20 @@ export const subscribeToUserMessages = (userId, onMessageReceived) => {
 };
 
 export const sendMessage = (userId, message) => {
+    const senderId = localStorage.getItem('userId');
+    console.log('Sender ID:', senderId); // Log senderId to verify
     if (stompClient && isConnected) {
-      stompClient.send(`/app/private.${userId}`, {}, JSON.stringify({
-        content: message.text,
-        chat: { id: message.chatId }
-      }));
+        stompClient.send(`/app/private.${userId}`, {}, JSON.stringify({
+            content: message.text,
+            chat: { id: message.chatId },
+            senderId: senderId // Include senderId in the message
+        }));
     } else {
-      console.warn('STOMP client is not connected, cannot send messages.');
+        console.warn('STOMP client is not connected, cannot send messages.');
     }
-  };
+};
+
+
   
 
 export const disconnectWebSocket = () => {

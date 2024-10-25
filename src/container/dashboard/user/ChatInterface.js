@@ -78,11 +78,13 @@ const ChatInterface = () => {
 
   const handleSendMessage = (text) => {
     if (selectedUser) {
-      const newMessage = { text, chatId: selectedUser.chatId };
-      sendMessage(selectedUser.id, newMessage);
-      setMessages((prevMessages) => [...prevMessages, { ...newMessage, isMine: true }]);
+        const newMessage = { text, chatId: selectedUser.chatId };
+        console.log('Chat ID:', newMessage.chatId); // Log chatId to verify
+        sendMessage(selectedUser.id, newMessage);
+        setMessages((prevMessages) => [...prevMessages, { ...newMessage, isMine: true }]);
     }
-  };
+};
+
 
   return (
     <Container fluid className="chat-interface">
