@@ -9,8 +9,11 @@ export const connectWebSocket = (onConnected, onError) => {
   if (!stompClient || !isConnected) {
     const socket = new SockJS(WEBSOCKET_CONNECTION);
     stompClient = over(socket);
+
+    const token = localStorage.getItem('token');
+
     stompClient.connect(
-      {},
+      { Authorization: `Bearer ${token}` },
       () => {
         isConnected = true;
         onConnected();
@@ -36,15 +39,16 @@ export const subscribeToUserMessages = (userId, onMessageReceived) => {
 };
 
 export const sendMessage = (userId, message) => {
-  if (stompClient && isConnected) {
-    stompClient.publish({
-      destination: `/app/private.${userId}`,
-      body: JSON.stringify(message),
-    });
-  } else {
-    console.warn('STOMP client is not connected, cannot send messages.');
-  }
-};
+    if (stompClient && isConnected) {
+      stompClient.send(`/app/private.${userId}`, {}, JSON.stringify({
+        content: message.text,
+        chat: { id: message.chatId }
+      }));
+    } else {
+      console.warn('STOMP client is not connected, cannot send messages.');
+    }
+  };
+  
 
 export const disconnectWebSocket = () => {
   if (stompClient && isConnected) {

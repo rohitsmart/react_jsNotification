@@ -78,9 +78,9 @@ const ChatInterface = () => {
 
   const handleSendMessage = (text) => {
     if (selectedUser) {
-      const newMessage = { text, isMine: true };
+      const newMessage = { text, chatId: selectedUser.chatId };
       sendMessage(selectedUser.id, newMessage);
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, { ...newMessage, isMine: true }]);
     }
   };
 
