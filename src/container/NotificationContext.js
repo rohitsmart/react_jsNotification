@@ -13,7 +13,6 @@ export const NotificationProvider = ({ children }) => {
   const eventSourceRef = useRef(null);
 
   const addNotification = (message) => {
-    console.log("Adding notification:", message);
     setNotifications((prev) => [...prev, message]);
     setHasUnreadNotifications(true);
   };

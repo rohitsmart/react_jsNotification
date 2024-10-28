@@ -7,6 +7,7 @@ import { fetchUsersList } from '../../../api/endpoint';
 import {
   connectWebSocket,
   subscribeToUserMessages,
+  unsubscribeFromUserMessages,
   sendMessage,
   disconnectWebSocket,
 } from '../../components/websocketService';
@@ -40,31 +41,41 @@ const ChatInterface = () => {
   }, [token, pagination.currentPage]);
 
   useEffect(() => {
+    const onConnected = () => {
+      console.log('Connected to WebSocket');
+      if (selectedUser) {
+        subscribeToUserMessages(selectedUser.id, handleMessageReceived);
+      }
+    };
+
+    const onError = (error) => {
+      console.error('WebSocket connection error:', error);
+    };
+
     connectWebSocket(onConnected, onError);
+    
     return () => {
       disconnectWebSocket();
     };
-  }, []);
-
-  useEffect(() => {
-    if (selectedUser) {
-      subscribeToUserMessages(selectedUser.id, handleMessageReceived);
-    }
   }, [selectedUser]);
 
-  const onConnected = () => {
-    console.log('Connected to WebSocket');
-  };
-
-  const onError = (error) => {
-    console.error('WebSocket connection error:', error);
-  };
+  useEffect(() => {
+    // Unsubscribe when selectedUser changes
+    return () => {
+      if (selectedUser) {
+        unsubscribeFromUserMessages(selectedUser.id);
+      }
+    };
+  }, [selectedUser]);
 
   const handleMessageReceived = (message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
   const handleSelectUser = async (user) => {
+    if (selectedUser) {
+      unsubscribeFromUserMessages(selectedUser.id);
+    }
     setSelectedUser(user);
     try {
       const response = await axios.get(`${fetchUsersList}/${user.id}/messages`, {
@@ -77,23 +88,38 @@ const ChatInterface = () => {
   };
 
   const handleSendMessage = (text) => {
-    if (selectedUser) {
-        const newMessage = { text, chatId: selectedUser.chatId };
-        console.log('Chat ID:', newMessage.chatId); // Log chatId to verify
-        sendMessage(selectedUser.id, newMessage);
-        setMessages((prevMessages) => [...prevMessages, { ...newMessage, isMine: true }]);
-    }
-};
+    if (selectedUser && token) {
+      const newMessage = {
+        content: text,
+        senderId: localStorage.getItem("userId"),
+      };
 
+      console.log('Sending message to:', selectedUser.id);
+      sendMessage(selectedUser.id, newMessage);
+      
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { ...newMessage, isMine: true }
+      ]);
+    }
+  };
 
   return (
     <Container fluid className="chat-interface">
       <Row className="h-100">
         <Col md={3} className="border-end p-0 bg-light">
-          <UserSidebar users={users} selectedUser={selectedUser} onSelectUser={handleSelectUser} />
+          <UserSidebar 
+            users={users} 
+            selectedUser={selectedUser} 
+            onSelectUser={handleSelectUser} 
+          />
         </Col>
         <Col md={9} className="p-0">
-          <ChatBody selectedUser={selectedUser} messages={messages} onSendMessage={handleSendMessage} />
+          <ChatBody 
+            selectedUser={selectedUser} 
+            messages={messages} 
+            onSendMessage={handleSendMessage} 
+          />
         </Col>
       </Row>
     </Container>
