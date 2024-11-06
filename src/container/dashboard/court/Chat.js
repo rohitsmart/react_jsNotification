@@ -1,10 +1,10 @@
 import React from 'react';
+import ChatInterface from '../user/ChatInterface';
 
 const Chat = () => {
   return (
     <div>
-      <h2>Home</h2>
-      <p>Welcome to the Tennis Mate Dashboard</p>
+      <ChatInterface/>
     </div>
   );
 };
